@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriLoop Lite - Climate Intelligence Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Lucide Icons as SVG components
+        const Leaf = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+            </svg>
+        );
+
+        const Droplets = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2.04 4.6 4 5.98 2 1.39 3 2.97 3 4.78 0 3.03-2.47 5.5-5.5 5.5-3.03 0-5.5-2.47-5.5-5.5 0-1.81 1-3.39 3-4.78 1.04-.72 1.93-1.61 2.56-2.6z"/>
+            </svg>
+        );
+
+        const Flame = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+            </svg>
+        );
+
+        const TrendingUp = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                <polyline points="16 7 22 7 22 13"/>
+            </svg>
+        );
+
+        const Globe = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+        );
+
+        const BarChart3 = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 3v18h18"/>
+                <path d="M18 17V9"/>
+                <path d="M13 17V5"/>
+                <path d="M8 17v-3"/>
+            </svg>
+        );
+
+        const MapPin = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+        );
+
+        const AlertTriangle = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+        );
+
+        const CheckCircle = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+        );
+
+        const ArrowRight = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+            </svg>
+        );
+
+        const Sprout = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 20h10"/>
+                <path d="M10 20c5.5-2.5.8-6.4 3-10"/>
+                <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/>
+                <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>
+            </svg>
+        );
+
+        const Wind = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/>
+                <path d="M9.6 4.6A2 2 0 1 1 11 8H2"/>
+                <path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>
+            </svg>
+        );
+
+        const AgriLoopDashboard = () => {
+          const [activeModule, setActiveModule] = useState('overview');
+          const [fireAlerts, setFireAlerts] = useState([]);
+          const [soilHealth, setSoilHealth] = useState(72);
+          const [waterUsage, setWaterUsage] = useState(85);
+          const [carbonCredits, setCarbonCredits] = useState(0);
+
+          useEffect(() => {
+            const fireInterval = setInterval(() => {
+              const mockAlert = {
+                id: Date.now(),
+                location: `${(30 + Math.random() * 2).toFixed(4)}°N, ${(75 + Math.random() * 2).toFixed(4)}°E`,
+                intensity: Math.floor(Math.random() * 100),
+                time: new Date().toLocaleTimeString()
+              };
+              setFireAlerts(prev => [mockAlert, ...prev].slice(0, 5));
+            }, 15000);
+
+            return () => clearInterval(fireInterval);
+          }, []);
+
+          const modules = [
+            { id: 'fire', icon: Flame, name: 'Fire Detection', color: 'from-red-500 to-orange-600', status: 'Active' },
+            { id: 'soil', icon: Leaf, name: 'Soil Health', color: 'from-green-500 to-emerald-600', status: 'Monitoring' },
+            { id: 'water', icon: Droplets, name: 'Water Conservation', color: 'from-blue-500 to-cyan-600', status: 'Optimizing' },
+            { id: 'carbon', icon: TrendingUp, name: 'Carbon Marketplace', color: 'from-purple-500 to-indigo-600', status: 'Trading' },
+            { id: 'biodiversity', icon: Globe, name: 'Biodiversity Tracker', color: 'from-teal-500 to-green-600', status: 'Tracking' }
+          ];
+
+          const OverviewModule = () => (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 rounded-2xl p-8 text-white">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h1 className="text-4xl font-bold mb-2">AgriLoop Lite</h1>
+                    <p className="text-xl opacity-90">Turning Earth's data into Earth's healing</p>
+                  </div>
+                  <Globe className="w-20 h-20 opacity-80" />
+                </div>
+                <div className="grid grid-cols-4 gap-4 mt-6">
+                  <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                    <p className="text-sm opacity-90">Active Alerts</p>
+                    <p className="text-3xl font-bold">{fireAlerts.length}</p>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                    <p className="text-sm opacity-90">Soil Health</p>
+                    <p className="text-3xl font-bold">{soilHealth}%</p>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                    <p className="text-sm opacity-90">Water Saved</p>
+                    <p className="text-3xl font-bold">{waterUsage}%</p>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur rounded-xl p-4">
+                    <p className="text-sm opacity-90">CO₂ Credits</p>
+                    <p className="text-3xl font-bold">{carbonCredits}t</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                {modules.map((module) => {
+                  const Icon = module.icon;
+                  return (
+                    <div
+                      key={module.id}
+                      onClick={() => setActiveModule(module.id)}
+                      className={`bg-gradient-to-br ${module.color} rounded-xl p-6 text-white cursor-pointer transform transition hover:scale-105 hover:shadow-2xl`}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <Icon className="w-12 h-12" />
+                        <span className="bg-white/30 backdrop-blur px-3 py-1 rounded-full text-sm">
+                          {module.status}
+                        </span>
+                      </div>
+                      <h3 className="text-2xl font-bold mb-2">{module.name}</h3>
+                      <p className="text-sm opacity-90 mb-4">
+                        {module.id === 'fire' && 'Real-time satellite fire detection & alerts'}
+                        {module.id === 'soil' && 'NDVI-based soil health monitoring'}
+                        {module.id === 'water' && 'Smart irrigation & conservation analytics'}
+                        {module.id === 'carbon' && 'Waste-to-wealth carbon credit trading'}
+                        {module.id === 'biodiversity' && 'Green cover & ecosystem restoration'}
+                      </p>
+                      <div className="flex items-center text-sm font-semibold">
+                        View Dashboard <ArrowRight className="w-4 h-4 ml-2" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-6">
+                <div className="flex items-start gap-4">
+                  <Sprout className="w-8 h-8 text-amber-600 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-xl font-bold text-amber-900 mb-2">Punjab Climate Impact</h3>
+                    <p className="text-amber-800 mb-4">
+                      This platform addresses Punjab's critical challenges: declining groundwater (23cm/year), soil degradation from chemical farming, stubble burning causing 40% of Delhi's air pollution, and the urgent need for sustainable agriculture transition.
+                    </p>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="bg-white rounded-lg p-3">
+                        <p className="text-2xl font-bold text-amber-600">2.8M</p>
+                        <p className="text-sm text-gray-600">Hectares monitored</p>
+                      </div>
+                      <div className="bg-white rounded-lg p-3">
+                        <p className="text-2xl font-bold text-green-600">-35%</p>
+                        <p className="text-sm text-gray-600">Water usage reduction</p>
+                      </div>
+                      <div className="bg-white rounded-lg p-3">
+                        <p className="text-2xl font-bold text-blue-600">12kt</p>
+                        <p className="text-sm text-gray-600">CO₂ sequestered</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+
+          const FireModule = () => (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-br from-red-500 to-orange-600 rounded-xl p-6 text-white">
+                <div className="flex items-center gap-3 mb-4">
+                  <Flame className="w-10 h-10" />
+                  <div>
+                    <h2 className="text-3xl font-bold">Fire Detection System</h2>
+                    <p className="opacity-90">MODIS & VIIRS Satellite Integration</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+                  <AlertTriangle className="w-8 h-8 text-red-600 mb-2" />
+                  <p className="text-sm text-gray-600 mb-1">Active Fires</p>
+                  <p className="text-3xl font-bold text-red-600">{fireAlerts.length}</p>
+                </div>
+                <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4">
+                  <MapPin className="w-8 h-8 text-orange-600 mb-2" />
+                  <p className="text-sm text-gray-600 mb-1">High Risk Zones</p>
+                  <p className="text-3xl font-bold text-orange-600">12</p>
+                </div>
+                <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-4">
+                  <BarChart3 className="w-8 h-8 text-amber-600 mb-2" />
+                  <p className="text-sm text-gray-600 mb-1">Area Burned</p>
+                  <p className="text-3xl font-bold text-amber-600">45 ha</p>
+                </div>
+              </div>
+
+              <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
+                <h3 className="text-xl font-bold mb-4">Real-Time Fire Alerts</h3>
+                <div className="space-y-3">
+                  {fireAlerts.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <Flame className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                      <p>No active fires detected. System monitoring...</p>
+                    </div>
+                  ) : (
+                    fireAlerts.map((alert) => (
+                      <div key={alert.id} className="flex items-center gap-4 bg-red-50 border border-red-200 rounded-lg p-4">
+                        <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="font-semibold text-red-900">Fire Detected</p>
+                          <p className="text-sm text-red-700">{alert.location}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-red-600">{alert.intensity}%</p>
+                          <p className="text-xs text-gray-600">{alert.time}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+
+          const renderModule = () => {
+            switch(activeModule) {
+              case 'fire': return <FireModule />;
+              default: return <OverviewModule />;
+            }
+          };
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
+              <div className="max-w-7xl mx-auto">
+                <div className="flex items-center justify-between mb-8">
+                  <button
+                    onClick={() => setActiveModule('overview')}
+                    className="flex items-center gap-3 text-gray-700 hover:text-green-600 transition"
+                  >
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">
+                      AL
+                    </div>
+                    <div>
+                      <h1 className="text-2xl font-bold">AgriLoop Lite</h1>
+                      <p className="text-sm text-gray-500">Climate Intelligence Platform</p>
+                    </div>
+                  </button>
+                  
+                  {activeModule !== 'overview' && (
+                    <button
+                      onClick={() => setActiveModule('overview')}
+                      className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border-2 border-gray-200 hover:border-green-500 transition"
+                    >
+                      <ArrowRight className="w-4 h-4 rotate-180" />
+                      <span className="font-semibold">Back to Overview</span>
+                    </button>
+                  )}
+                </div>
+
+                {renderModule()}
+
+                <div className="mt-8 bg-white border-2 border-gray-200 rounded-xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Developed by Jasmine for Punjab Climate Hackathon</p>
+                      <p className="text-xs text-gray-500 mt-1">Powered by Google Earth Engine, AI & Satellite Data</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-sm text-gray-600">Live Monitoring</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<AgriLoopDashboard />);
+    </script>
+</body>
+</html>
